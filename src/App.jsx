@@ -1,26 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Hero from './components/Hero'
+import Navbar from './components/Navbar'
+import Auth from './components/Auth'
+import Dashboard from './components/Dashboard'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [authed, setAuthed] = useState(!!localStorage.getItem('token'))
+
+  useEffect(()=>{
+    const handler = () => setAuthed(!!localStorage.getItem('token'))
+    window.addEventListener('storage', handler)
+    return () => window.removeEventListener('storage', handler)
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
+      <Navbar onLogout={()=>setAuthed(false)} />
+      <Hero />
+      <main>
+        {!authed && <Auth onAuth={()=>setAuthed(true)} />}
+        <Dashboard />
+      </main>
+      <footer className="mt-16 py-10 text-center text-sm text-slate-600">Built for modern school clubs — Admin, SPOC, and Student friendly.</footer>
     </div>
   )
 }
